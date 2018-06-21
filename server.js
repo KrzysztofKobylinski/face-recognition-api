@@ -4,6 +4,11 @@ const bcrypt = require("bcrypt-nodejs");
 const cors = require("cors");
 const knex = require("knex");
 
+const app = express();
+app.use(bodyParser.json());
+app.use(cors());
+
+
 const db = knex({
   client: "pg",
   connection: {
@@ -14,13 +19,6 @@ const db = knex({
   }
 });
 
-const app = express();
-app.use(bodyParser.json());
-app.use(cors());
-
-app.get("/", (req, res) => {
-  res.send(database.users);
-});
 
 app.post("/signin", (req, res) => {
   db.select("email", "hash")
@@ -34,6 +32,7 @@ app.post("/signin", (req, res) => {
           .from("users")
           .where("email", "=", req.body.email)
           .then(user => {
+            console.log(user);
             res.json(user[0]);
           })
           .catch(err => res.status(400).json("unable to get useer"));
